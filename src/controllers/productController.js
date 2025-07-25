@@ -1,6 +1,6 @@
 import express from "express";
 import productService from "../services/productService.js";
-import { verifyProduct } from "";
+import auth from "../middlewares/auth.js";
 
 const productController = express.Router();
 
@@ -25,7 +25,7 @@ productController.get("/:id", async (req, res, next) => {
   }
 });
 
-productController.post("/", verifyProduct, async (req, res, next) => {
+productController.post("/", auth.verifyProductAuth, async (req, res, next) => {
   try {
     const product = await productService.create({
       ...req.body,
@@ -37,26 +37,34 @@ productController.post("/", verifyProduct, async (req, res, next) => {
   }
 });
 
-productController.patch("/:id", verifyProduct, async (req, res, next) => {
-  try {
-    const updated = await productService.update(
-      req.params.id,
-      req.body,
-      req.user.id
-    );
-    res.json(updated);
-  } catch (error) {
-    next(error);
+productController.patch(
+  "/:id",
+  auth.verifyProductAuth,
+  async (req, res, next) => {
+    try {
+      const updated = await productService.update(
+        req.params.id,
+        req.body,
+        req.user.id
+      );
+      res.json(updated);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-productController.delete("/:id", verifyProduct, async (req, res, next) => {
-  try {
-    await productService.remove(req.params.id, req.user.id);
-    res.status(204).end();
-  } catch (error) {
-    next(error);
+productController.delete(
+  "/:id",
+  auth.verifyProductAuth,
+  async (req, res, next) => {
+    try {
+      await productService.remove(req.params.id, req.user.id);
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 export default productController;

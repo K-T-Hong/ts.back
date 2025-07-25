@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import productController from "./controllers/productController.js";
+import userController from "./controllers/userController.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config();
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/products", productController);
+app.use("/user", userController);
 
 app.use(errorHandler);
 
