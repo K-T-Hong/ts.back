@@ -5,6 +5,7 @@ import productController from "./controllers/productController.js";
 import userController from "./controllers/userController.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import articleController from "./controllers/articleController.js";
+import commentController from "./controllers/commentController.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/user", userController);
 app.use("/products", productController);
 app.use("/articles", articleController);
+app.use("/", commentController);
 
 app.use(errorHandler);
 
