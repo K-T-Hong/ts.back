@@ -1,15 +1,15 @@
 import productRepo from "../repositories/productRepo.js";
 
-async function getList({ page, pageSize, sort, q }) {
+async function getList({ page, pageSize, sort, keyword }) {
   const pageNum = Number(page);
   const limit = Number(pageSize);
   const skip = (pageNum - 1) * limit;
 
-  const where = q
+  const where = keyword
     ? {
         OR: [
-          { name: { contains: q, mode: "insensitive" } },
-          { description: { contains: q, mode: "insensitive" } },
+          { name: { contains: keyword, mode: "insensitive" } },
+          { description: { contains: keyword, mode: "insensitive" } },
         ],
       }
     : {};
@@ -76,18 +76,18 @@ async function create({ userId, name, description, price, images, tags }) {
 
 async function update(
   id,
-  currentUserId,
-  { name, description, price, images, tags }
+  { name, description, price, images, tags },
+  currentUserId
 ) {
-  const existing = await productRepo.findById(id);
-  if (!existing) {
+  const product = await productRepo.findById(id);
+  if (!product) {
     throw new Error("상품이 존재하지 않습니다.");
   }
-  if (existing.userId !== currentUserId) {
-    throw new Error("해당 상품을 수정할 권한이 없습니다.");
+  if (product.userId !== currentUserId) {
+    throw new Error("해당 상품의 수정 권한이 없습니다.");
   }
 
-  const data = {};
+  const updateData = {};
 
   if (name !== undefined) {
     if (
@@ -97,7 +97,7 @@ async function update(
     ) {
       throw new Error("상품명은 30자 이내로 입력해주세요.");
     }
-    data.name = name.trim();
+    updateData.name = name.trim();
   }
   if (description !== undefined) {
     if (
@@ -107,14 +107,14 @@ async function update(
     ) {
       throw new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
     }
-    data.description = description.trim();
+    updateData.description = description.trim();
   }
   if (price !== undefined) {
     const priceNumber = Number(price);
     if (isNaN(priceNumber) || priceNumber < 0) {
       throw new Error("가격은 0 이상이어야 합니다.");
     }
-    data.price = priceNumber;
+    updateData.price = priceNumber;
   }
   if (images !== undefined) {
     if (
@@ -123,7 +123,7 @@ async function update(
     ) {
       throw new Error("images는 문자열 배열이어야 합니다.");
     }
-    data.images = images;
+    updateData.images = images;
   }
   if (tags !== undefined) {
     if (
@@ -132,10 +132,10 @@ async function update(
     ) {
       throw new Error("태그는 각각 5자 이내여야 합니다.");
     }
-    data.tags = tags.map(t => t.trim());
+    updateData.tags = tags.map(t => t.trim());
   }
 
-  return productRepo.update(id, data);
+  return productRepo.update(id, updateData);
 }
 
 async function remove(id, currentUserId) {
@@ -144,7 +144,7 @@ async function remove(id, currentUserId) {
     throw new Error("상품이 존재하지 않습니다.");
   }
   if (product.userId !== currentUserId) {
-    throw new Error("해당 상품을 삭제할 권한이 없습니다.");
+    throw new Error("해당 상품의 삭제 권한이 없습니다.");
   }
   return productRepo.remove(id);
 }

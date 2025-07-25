@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import productController from "./controllers/productController.js";
 import userController from "./controllers/userController.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import articleController from "./controllers/articleController.js";
 
 dotenv.config();
 
@@ -12,8 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/products", productController);
 app.use("/user", userController);
+app.use("/products", productController);
+app.use("/articles", articleController);
 
 app.use(errorHandler);
 

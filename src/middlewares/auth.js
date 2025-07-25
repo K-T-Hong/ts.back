@@ -1,13 +1,5 @@
 import jwt from "jsonwebtoken";
 
-async function verifyProductAuth(req, res, next) {
-  const user = req.user;
-  if (!user || !user.id) {
-    return res.status(401).json({ error: "로그인이 필요합니다." });
-  }
-  next();
-}
-
 async function verifyAuth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer")) {
@@ -23,4 +15,4 @@ async function verifyAuth(req, res, next) {
   }
 }
 
-export default { verifyProductAuth, verifyAuth };
+export default { verifyAuth };
