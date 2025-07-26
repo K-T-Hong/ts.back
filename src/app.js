@@ -6,13 +6,20 @@ import userController from "./controllers/userController.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import articleController from "./controllers/articleController.js";
 import commentController from "./controllers/commentController.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/user", userController);
 app.use("/products", productController);

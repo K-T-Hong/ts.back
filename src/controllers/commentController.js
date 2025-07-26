@@ -8,8 +8,8 @@ commentController.get("/comments", async (req, res, next) => {
   try {
     const comments = await commentService.getAll();
     res.json(comments);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -19,8 +19,8 @@ commentController.get(
     try {
       const comments = await commentService.getByProduct(req.params.productId);
       res.json(comments);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -31,8 +31,8 @@ commentController.get(
     try {
       const comments = await commentService.getByArticle(req.params.articleId);
       res.json(comments);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -48,8 +48,8 @@ commentController.post(
         content: req.body.content,
       });
       res.status(201).json(comment);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -65,8 +65,8 @@ commentController.post(
         content: req.body.content,
       });
       res.status(201).json(comment);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -82,8 +82,8 @@ commentController.patch(
         req.body.content
       );
       res.json(comment);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -95,8 +95,8 @@ commentController.delete(
     try {
       await commentService.remove(req.params.id, req.user.id);
       res.status(204).end();
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 );

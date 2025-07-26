@@ -14,8 +14,8 @@ articleController.get("/", async (req, res, next) => {
       keyword,
     });
     res.json(result);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 });
 
