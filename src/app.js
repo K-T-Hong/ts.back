@@ -1,12 +1,13 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import errorHandler from "./middlewares/errorHandler.js";
 import productController from "./controllers/productController.js";
 import userController from "./controllers/userController.js";
-import errorHandler from "./middlewares/errorHandler.js";
 import articleController from "./controllers/articleController.js";
 import commentController from "./controllers/commentController.js";
-import cookieParser from "cookie-parser";
+import likeController from "./controllers/likeController.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/user", userController);
 app.use("/products", productController);
 app.use("/articles", articleController);
 app.use("/", commentController);
+app.use("/", likeController);
 
 app.use(errorHandler);
 
