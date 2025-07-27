@@ -40,43 +40,59 @@ async function getById(id, userId) {
         })
       : Promise.resolve(null),
   ]);
-  if (!product) return null;
+  if (!product) {
+    const err = new Error("상품을 찾을 수 없습니다.");
+    err.status = 404;
+    throw err;
+  }
   return { ...product, isLiked: !!favorite };
 }
 
 async function create({ userId, name, description, price, images, tags }) {
   if (!userId || isNaN(Number(userId))) {
-    throw new Error("유효한 userId가 필요합니다.");
+    const err = new Error("유효한 userId가 필요합니다.");
+    err.status = 400;
+    throw err;
   }
   if (
     typeof name !== "string" ||
     name.trim().length < 1 ||
     name.trim().length > 30
   ) {
-    throw new Error("상품명은 30자 이내로 입력해주세요.");
+    const err = new Error("상품명은 30자 이내로 입력해주세요.");
+    err.status = 400;
+    throw err;
   }
   if (
     typeof description !== "string" ||
     description.trim().length < 10 ||
     description.trim().length > 1000
   ) {
-    throw new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
+    const err = new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
+    err.status = 400;
+    throw err;
   }
   const priceNumber = Number(price);
   if (isNaN(priceNumber) || priceNumber < 0) {
-    throw new Error("가격은 0 이상이어야 합니다.");
+    const err = new Error("가격은 0 이상이어야 합니다.");
+    err.status = 400;
+    throw err;
   }
   if (
     !Array.isArray(images) ||
     !images.every(image => typeof image === "string")
   ) {
-    throw new Error("images는 문자열 배열이어야 합니다.");
+    const err = new Error("images는 문자열 배열이어야 합니다.");
+    err.status = 400;
+    throw err;
   }
   if (
     !Array.isArray(tags) ||
     !tags.every(tag => typeof tag === "string" && tag.trim().length <= 5)
   ) {
-    throw new Error("태그는 각각 5자 이내여야 합니다.");
+    const err = new Error("태그는 각각 5자 이내여야 합니다.");
+    err.status = 400;
+    throw err;
   }
 
   return productRepo.create({
@@ -96,10 +112,14 @@ async function update(
 ) {
   const product = await productRepo.findById(id);
   if (!product) {
-    throw new Error("상품이 존재하지 않습니다.");
+    const err = new Error("상품이 존재하지 않습니다.");
+    err.status = 404;
+    throw err;
   }
   if (product.userId !== currentUserId) {
-    throw new Error("해당 상품의 수정 권한이 없습니다.");
+    const err = new Error("해당 상품의 수정 권한이 없습니다.");
+    err.status = 403;
+    throw err;
   }
 
   const updateData = {};
@@ -110,7 +130,9 @@ async function update(
       name.trim().length < 1 ||
       name.trim().length > 30
     ) {
-      throw new Error("상품명은 30자 이내로 입력해주세요.");
+      const err = new Error("상품명은 30자 이내로 입력해주세요.");
+      err.status = 400;
+      throw err;
     }
     updateData.name = name.trim();
   }
@@ -120,14 +142,18 @@ async function update(
       description.trim().length < 10 ||
       description.trim().length > 1000
     ) {
-      throw new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
+      const err = new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
+      err.status = 400;
+      throw err;
     }
     updateData.description = description.trim();
   }
   if (price !== undefined) {
     const priceNumber = Number(price);
     if (isNaN(priceNumber) || priceNumber < 0) {
-      throw new Error("가격은 0 이상이어야 합니다.");
+      const err = new Error("가격은 0 이상이어야 합니다.");
+      err.status = 400;
+      throw err;
     }
     updateData.price = priceNumber;
   }
@@ -136,7 +162,9 @@ async function update(
       !Array.isArray(images) ||
       !images.every(image => typeof image === "string")
     ) {
-      throw new Error("images는 문자열 배열이어야 합니다.");
+      const err = new Error("images는 문자열 배열이어야 합니다.");
+      err.status = 400;
+      throw err;
     }
     updateData.images = images;
   }
@@ -145,7 +173,9 @@ async function update(
       !Array.isArray(tags) ||
       !tags.every(tag => typeof tag === "string" && tag.trim().length <= 5)
     ) {
-      throw new Error("태그는 각각 5자 이내여야 합니다.");
+      const err = new Error("태그는 각각 5자 이내여야 합니다.");
+      err.status = 400;
+      throw err;
     }
     updateData.tags = tags.map(t => t.trim());
   }
@@ -156,10 +186,14 @@ async function update(
 async function remove(id, currentUserId) {
   const product = await productRepo.findById(id);
   if (!product) {
-    throw new Error("상품이 존재하지 않습니다.");
+    const err = new Error("상품이 존재하지 않습니다.");
+    err.status = 404;
+    throw err;
   }
   if (product.userId !== currentUserId) {
-    throw new Error("해당 상품의 삭제 권한이 없습니다.");
+    const err = new Error("해당 상품의 삭제 권한이 없습니다.");
+    err.status = 403;
+    throw err;
   }
   return productRepo.remove(id);
 }

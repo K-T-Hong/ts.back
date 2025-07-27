@@ -23,9 +23,6 @@ articleController.get("/:id", async (req, res, next) => {
   try {
     const userId = req.user?.id;
     const article = await articleService.getById(req.params.id, userId);
-    if (!article) {
-      return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
-    }
     res.json(article);
   } catch (error) {
     next(error);

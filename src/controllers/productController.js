@@ -23,9 +23,6 @@ productController.get("/:id", async (req, res, next) => {
   try {
     const userId = req.user?.id;
     const product = await productService.getById(req.params.id, userId);
-    if (!product) {
-      return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
-    }
     res.json(product);
   } catch (error) {
     next(error);

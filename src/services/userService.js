@@ -19,9 +19,17 @@ function generateRefreshToken(user) {
 }
 
 async function signup({ email, nickname, password }) {
-  if (!email || !password || !nickname) throw new Error("필수 항목 누락");
+  if (!email || !password || !nickname) {
+    const err = new Error("필수 항목 누락");
+    err.status = 400;
+    throw err;
+  }
   const existing = await userRepo.findByEmail(email);
-  if (existing) throw new Error("이미 등록된 이메일입니다.");
+  if (existing) {
+    const err = new Error("이미 등록된 이메일입니다.");
+    err.status = 409;
+    throw err;
+  }
   const hashed = await bcrypt.hash(password, SALT_ROUNDS);
   const user = await userRepo.create({ email, nickname, password: hashed });
   const { password: _, ...safeUser } = user;
@@ -30,9 +38,17 @@ async function signup({ email, nickname, password }) {
 
 async function signin({ email, password }) {
   const user = await userRepo.findByEmail(email);
-  if (!user || !user.password) throw new Error("이메일 또는 비밀번호 오류");
+  if (!user || !user.password) {
+    const err = new Error("이메일 또는 비밀번호 오류");
+    err.status = 401;
+    throw err;
+  }
   const valid = await bcrypt.compare(password, user.password);
-  if (!valid) throw new Error("이메일 또는 비밀번호 오류");
+  if (!valid) {
+    const err = new Error("이메일 또는 비밀번호 오류");
+    err.status = 401;
+    throw err;
+  }
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
@@ -45,12 +61,16 @@ async function refresh(refreshToken) {
     const decoded = jwt.verify(refreshToken, JWT_SECRET);
     const user = await userRepo.findById(decoded.id);
     if (!user || user.refreshToken !== refreshToken) {
-      throw new Error("RefreshToken이 유효하지 않습니다.");
+      const err = new Error("RefreshToken이 유효하지 않습니다.");
+      err.status = 401;
+      throw err;
     }
     const newAccessToken = generateAccessToken(user);
     return { accessToken: newAccessToken };
   } catch {
-    throw new Error("토큰 갱신 실패");
+    const err = new Error("토큰 갱신 실패");
+    err.status = 401;
+    throw err;
   }
 }
 

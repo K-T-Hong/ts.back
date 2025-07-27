@@ -40,27 +40,38 @@ async function getById(id, userId) {
         })
       : Promise.resolve(null),
   ]);
-  if (!article) return null;
+  if (!article) {
+    const err = new Error("게시글을 찾을 수 없습니다.");
+    err.status = 404;
+    throw err;
+  }
   return { ...article, isLiked: !!like };
 }
 
 async function create({ userId, title, content }) {
   if (!userId || isNaN(Number(userId))) {
-    throw new Error("유효한 userId가 필요합니다.");
+    const err = new Error("유효한 userId가 필요합니다.");
+    err.status = 400;
+    throw err;
   }
   if (
     typeof title !== "string" ||
     title.trim().length < 1 ||
     title.trim().length > 30
-  )
-    throw new Error("제목은 30자 이내로 입력해주세요.");
+  ) {
+    const err = new Error("제목은 30자 이내로 입력해주세요.");
+    err.status = 400;
+    throw err;
+  }
   if (
     typeof content !== "string" ||
     content.trim().length < 1 ||
     content.trim().length > 1000
-  )
-    throw new Error("내용은 1000자 이내로 입력해주세요.");
-
+  ) {
+    const err = new Error("내용은 1000자 이내로 입력해주세요.");
+    err.status = 400;
+    throw err;
+  }
   return articleRepo.create({
     userId: Number(userId),
     title: title.trim(),
@@ -70,9 +81,16 @@ async function create({ userId, title, content }) {
 
 async function update(id, { title, content }, currentUserId) {
   const article = await articleRepo.findById(id);
-  if (!article) throw new Error("게시글이 존재하지 않습니다.");
-  if (article.userId !== currentUserId)
-    throw new Error("해당 게시글의 수정 권한이 없습니다.");
+  if (!article) {
+    const err = new Error("게시글이 존재하지 않습니다.");
+    err.status = 404;
+    throw err;
+  }
+  if (article.userId !== currentUserId) {
+    const err = new Error("해당 게시글의 수정 권한이 없습니다.");
+    err.status = 403;
+    throw err;
+  }
 
   const updateData = {};
   if (title !== undefined) {
@@ -80,8 +98,11 @@ async function update(id, { title, content }, currentUserId) {
       typeof title !== "string" ||
       title.trim().length < 1 ||
       title.trim().length > 30
-    )
-      throw new Error("제목은 30자 이내로 입력해주세요.");
+    ) {
+      const err = new Error("제목은 30자 이내로 입력해주세요.");
+      err.status = 400;
+      throw err;
+    }
     updateData.title = title.trim();
   }
   if (content !== undefined) {
@@ -89,8 +110,11 @@ async function update(id, { title, content }, currentUserId) {
       typeof content !== "string" ||
       content.trim().length < 1 ||
       content.trim().length > 1000
-    )
-      throw new Error("내용은 1000자 이내로 입력해주세요.");
+    ) {
+      const err = new Error("내용은 1000자 이내로 입력해주세요.");
+      err.status = 400;
+      throw err;
+    }
     updateData.content = content.trim();
   }
 
@@ -100,10 +124,14 @@ async function update(id, { title, content }, currentUserId) {
 async function remove(id, currentUserId) {
   const article = await articleRepo.findById(id);
   if (!article) {
-    throw new Error("게시글이 존재하지 않습니다.");
+    const err = new Error("게시글이 존재하지 않습니다.");
+    err.status = 404;
+    throw err;
   }
   if (article.userId !== currentUserId) {
-    throw new Error("해당 게시글의 삭제 권한이 없습니다.");
+    const err = new Error("해당 게시글의 삭제 권한이 없습니다.");
+    err.status = 403;
+    throw err;
   }
   return articleRepo.remove(id);
 }

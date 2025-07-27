@@ -17,7 +17,9 @@ async function createForProduct({ userId, productId, content }) {
     content.trim().length < 1 ||
     content.trim().length > 200
   ) {
-    throw new Error("댓글은 200자 이내로 입력해주세요.");
+    const err = new Error("댓글은 200자 이내로 입력해주세요.");
+    err.status = 400;
+    throw err;
   }
   return commentRepo.create({
     content: content.trim(),
@@ -33,7 +35,9 @@ async function createForArticle({ userId, articleId, content }) {
     content.trim().length < 1 ||
     content.trim().length > 200
   ) {
-    throw new Error("댓글은 200자 이내로 입력해주세요.");
+    const err = new Error("댓글은 200자 이내로 입력해주세요.");
+    err.status = 400;
+    throw err;
   }
   return commentRepo.create({
     content: content.trim(),
@@ -49,14 +53,20 @@ async function update(id, userId, content) {
     content.trim().length < 1 ||
     content.trim().length > 200
   ) {
-    throw new Error("댓글은 200자 이내로 입력해주세요.");
+    const err = new Error("댓글은 200자 이내로 입력해주세요.");
+    err.status = 400;
+    throw err;
   }
   const comment = await commentRepo.findById(id);
   if (!comment) {
-    throw new Error("댓글이 존재하지 않습니다.");
+    const err = new Error("댓글이 존재하지 않습니다.");
+    err.status = 404;
+    throw err;
   }
   if (comment.userId !== userId) {
-    throw new Error("수정 권한이 없습니다.");
+    const err = new Error("수정 권한이 없습니다.");
+    err.status = 403;
+    throw err;
   }
   return commentRepo.update(id, { content: content.trim() });
 }
@@ -64,10 +74,14 @@ async function update(id, userId, content) {
 async function remove(id, userId) {
   const comment = await commentRepo.findById(id);
   if (!comment) {
-    throw new Error("댓글이 존재하지 않습니다.");
+    const err = new Error("댓글이 존재하지 않습니다.");
+    err.status = 404;
+    throw err;
   }
   if (comment.userId !== userId) {
-    throw new Error("삭제 권한이 없습니다.");
+    const err = new Error("삭제 권한이 없습니다.");
+    err.status = 403;
+    throw err;
   }
   return commentRepo.remove(id);
 }
