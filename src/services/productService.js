@@ -54,52 +54,11 @@ async function create({ userId, name, description, price, images, tags }) {
     err.status = 400;
     throw err;
   }
-  if (
-    typeof name !== "string" ||
-    name.trim().length < 1 ||
-    name.trim().length > 30
-  ) {
-    const err = new Error("상품명은 30자 이내로 입력해주세요.");
-    err.status = 400;
-    throw err;
-  }
-  if (
-    typeof description !== "string" ||
-    description.trim().length < 10 ||
-    description.trim().length > 1000
-  ) {
-    const err = new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
-    err.status = 400;
-    throw err;
-  }
-  const priceNumber = Number(price);
-  if (isNaN(priceNumber) || priceNumber < 0) {
-    const err = new Error("가격은 0 이상이어야 합니다.");
-    err.status = 400;
-    throw err;
-  }
-  if (
-    !Array.isArray(images) ||
-    !images.every(image => typeof image === "string")
-  ) {
-    const err = new Error("images는 문자열 배열이어야 합니다.");
-    err.status = 400;
-    throw err;
-  }
-  if (
-    !Array.isArray(tags) ||
-    !tags.every(tag => typeof tag === "string" && tag.trim().length <= 5)
-  ) {
-    const err = new Error("태그는 각각 5자 이내여야 합니다.");
-    err.status = 400;
-    throw err;
-  }
-
   return productRepo.create({
     userId: Number(userId),
     name: name.trim(),
     description: description.trim(),
-    price: priceNumber,
+    price: Number(price),
     images,
     tags: tags.map(tag => tag.trim()),
   });
@@ -122,65 +81,13 @@ async function update(
     throw err;
   }
 
-  const updateData = {};
-
-  if (name !== undefined) {
-    if (
-      typeof name !== "string" ||
-      name.trim().length < 1 ||
-      name.trim().length > 30
-    ) {
-      const err = new Error("상품명은 30자 이내로 입력해주세요.");
-      err.status = 400;
-      throw err;
-    }
-    updateData.name = name.trim();
-  }
-  if (description !== undefined) {
-    if (
-      typeof description !== "string" ||
-      description.trim().length < 10 ||
-      description.trim().length > 1000
-    ) {
-      const err = new Error("상품 설명은 10 ~ 1000자 사이로 입력해주세요.");
-      err.status = 400;
-      throw err;
-    }
-    updateData.description = description.trim();
-  }
-  if (price !== undefined) {
-    const priceNumber = Number(price);
-    if (isNaN(priceNumber) || priceNumber < 0) {
-      const err = new Error("가격은 0 이상이어야 합니다.");
-      err.status = 400;
-      throw err;
-    }
-    updateData.price = priceNumber;
-  }
-  if (images !== undefined) {
-    if (
-      !Array.isArray(images) ||
-      !images.every(image => typeof image === "string")
-    ) {
-      const err = new Error("images는 문자열 배열이어야 합니다.");
-      err.status = 400;
-      throw err;
-    }
-    updateData.images = images;
-  }
-  if (tags !== undefined) {
-    if (
-      !Array.isArray(tags) ||
-      !tags.every(tag => typeof tag === "string" && tag.trim().length <= 5)
-    ) {
-      const err = new Error("태그는 각각 5자 이내여야 합니다.");
-      err.status = 400;
-      throw err;
-    }
-    updateData.tags = tags.map(t => t.trim());
-  }
-
-  return productRepo.update(id, updateData);
+  return productRepo.update(id, {
+    name: name.trim(),
+    description: description.trim(),
+    price: Number(price),
+    images,
+    tags: tags.map(t => t.trim()),
+  });
 }
 
 async function remove(id, currentUserId) {

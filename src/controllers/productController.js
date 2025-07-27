@@ -1,6 +1,8 @@
 import express from "express";
 import productService from "../services/productService.js";
 import auth from "../middlewares/auth.js";
+import validateProduct from "../middlewares/validateProduct.js";
+import upload from "../middlewares/uploadImg.js";
 
 const productController = express.Router();
 
@@ -29,30 +31,60 @@ productController.get("/:id", async (req, res, next) => {
   }
 });
 
-productController.post("/", auth.verifyAuth, async (req, res, next) => {
-  try {
-    const product = await productService.create({
-      ...req.body,
-      userId: req.user.id,
-    });
-    res.status(201).json(product);
-  } catch (error) {
-    next(error);
+productController.post(
+  "/",
+  auth.verifyAuth,
+  upload.array("images", 3),
+  validateProduct,
+  async (req, res, next) => {
+    try {
+      const images = req.files.map(file => file.path);
+      const { name, description, price, tags } = req.body;
+      const tagsArr = typeof tags === "string" ? JSON.parse(tags) : tags;
+      const product = await productService.create({
+        userId: req.user.id,
+        name,
+        description,
+        price,
+        images,
+        tags: tagsArr,
+      });
+      res.status(201).json(product);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-productController.patch("/:id", auth.verifyAuth, async (req, res, next) => {
-  try {
-    const updated = await productService.update(
-      req.params.id,
-      req.body,
-      req.user.id
-    );
-    res.json(updated);
-  } catch (error) {
-    next(error);
+productController.patch(
+  "/:id",
+  auth.verifyAuth,
+  upload.array("images", 3),
+  validateProduct,
+  async (req, res, next) => {
+    try {
+      const images = req.files.length
+        ? req.files.map(file => file.path)
+        : req.body.images;
+      const { name, description, price, tags } = req.body;
+      const tagsArr = typeof tags === "string" ? JSON.parse(tags) : tags;
+      const updated = await productService.update(
+        req.params.id,
+        {
+          name,
+          description,
+          price,
+          images,
+          tags: tagsArr,
+        },
+        req.user.id
+      );
+      res.json(updated);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 productController.delete("/:id", auth.verifyAuth, async (req, res, next) => {
   try {

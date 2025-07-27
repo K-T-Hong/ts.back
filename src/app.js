@@ -29,6 +29,7 @@ app.use("/articles", articleController);
 app.use("/", commentController);
 app.use("/", likeController);
 app.use("/", favoriteController);
+app.use("/uploads", express.static("uploads"));
 
 app.use(errorHandler);
 
