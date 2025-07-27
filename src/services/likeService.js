@@ -1,14 +1,33 @@
+import prisma from "../config/prisma.js";
 import likeRepo from "../repositories/likeRepo.js";
 
 async function like(userId, articleId) {
-  const already = await likeRepo.findByLike(userId, articleId);
-  if (already) {
-    await likeRepo.remove(userId, articleId);
-    return { liked: false };
-  } else {
-    await likeRepo.create(userId, articleId);
-    return { liked: true };
-  }
+  return await prisma.$transaction(async tx => {
+    const existing = await tx.like.findUnique({
+      where: {
+        userId_articleId: {
+          userId: Number(userId),
+          articleId: Number(articleId),
+        },
+      },
+    });
+    if (existing) {
+      await tx.like.delete({
+        where: {
+          userId_articleId: {
+            userId: Number(userId),
+            articleId: Number(articleId),
+          },
+        },
+      });
+      return { liked: false };
+    } else {
+      await tx.like.create({
+        data: { userId: Number(userId), articleId: Number(articleId) },
+      });
+      return { liked: true };
+    }
+  });
 }
 
 async function count(articleId) {

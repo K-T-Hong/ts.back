@@ -24,8 +24,8 @@ favoriteController.get(
   "/products/:productId/favorites/count",
   async (req, res, next) => {
     try {
-      const count = await favoriteService.count(req.params.productId);
-      res.json({ count });
+      const favoriteCount = await favoriteService.count(req.params.productId);
+      res.json({ count: favoriteCount });
     } catch (error) {
       next(error);
     }

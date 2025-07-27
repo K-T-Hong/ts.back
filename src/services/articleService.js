@@ -1,3 +1,4 @@
+import prisma from "../config/prisma.js";
 import articleRepo from "../repositories/articleRepo.js";
 
 async function getList({ page, pageSize, sort, keyword }) {
@@ -25,8 +26,22 @@ async function getList({ page, pageSize, sort, keyword }) {
   return { list, totalCount, page: pageNum, pageSize: limit };
 }
 
-async function getById(id) {
-  return articleRepo.findById(id);
+async function getById(id, userId) {
+  const [article, like] = await prisma.$transaction([
+    articleRepo.findById(id),
+    userId
+      ? prisma.like.findUnique({
+          where: {
+            userId_articleId: {
+              userId: Number(userId),
+              articleId: Number(id),
+            },
+          },
+        })
+      : Promise.resolve(null),
+  ]);
+  if (!article) return null;
+  return { ...article, isLiked: !!like };
 }
 
 async function create({ userId, title, content }) {

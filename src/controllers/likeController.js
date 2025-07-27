@@ -9,8 +9,8 @@ likeController.post(
   auth.verifyAuth,
   async (req, res, next) => {
     try {
-      const like = await likeService.like(req.user.id, req.params.articleId);
-      res.json(like);
+      const result = await likeService.like(req.user.id, req.params.articleId);
+      res.json(result);
     } catch (error) {
       next(error);
     }
@@ -21,8 +21,8 @@ likeController.get(
   "/articles/:articleId/likes/count",
   async (req, res, next) => {
     try {
-      const count = await likeService.count(req.params.articleId);
-      res.json({ count });
+      const likeCount = await likeService.count(req.params.articleId);
+      res.json({ count: likeCount });
     } catch (error) {
       next(error);
     }
