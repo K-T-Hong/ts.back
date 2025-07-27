@@ -1,3 +1,4 @@
+import prisma from "../config/prisma.js";
 import productRepo from "../repositories/productRepo.js";
 
 async function getList({ page, pageSize, sort, keyword }) {
@@ -25,8 +26,22 @@ async function getList({ page, pageSize, sort, keyword }) {
   return { list, totalCount, page: pageNum, pageSize: limit };
 }
 
-async function getById(id) {
-  return productRepo.findById(id);
+async function getById(id, userId) {
+  const [product, favorite] = await prisma.$transaction([
+    productRepo.findById(id),
+    userId
+      ? prisma.favorite.findUnique({
+          where: {
+            userId_productId: {
+              userId: Number(userId),
+              productId: Number(id),
+            },
+          },
+        })
+      : Promise.resolve(null),
+  ]);
+  if (!product) return null;
+  return { ...product, isLiked: !!favorite };
 }
 
 async function create({ userId, name, description, price, images, tags }) {

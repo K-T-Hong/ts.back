@@ -8,6 +8,7 @@ import userController from "./controllers/userController.js";
 import articleController from "./controllers/articleController.js";
 import commentController from "./controllers/commentController.js";
 import likeController from "./controllers/likeController.js";
+import favoriteController from "./controllers/favoriteController.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/products", productController);
 app.use("/articles", articleController);
 app.use("/", commentController);
 app.use("/", likeController);
+app.use("/", favoriteController);
 
 app.use(errorHandler);
 
