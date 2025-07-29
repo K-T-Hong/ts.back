@@ -43,8 +43,20 @@ async function update(id, data) {
   });
 }
 
-function updateRefreshToken(id, refreshToken) {
+async function updateRefreshToken(id, refreshToken) {
   return prisma.user.update({ where: { id }, data: { refreshToken } });
+}
+
+async function findBySocial(provider, providerId) {
+  return prisma.user.findUnique({
+    where: { provider_providerId: { provider, providerId } },
+  });
+}
+
+async function createSocial({ provider, providerId, email, nickname, image }) {
+  return prisma.user.create({
+    data: { provider, providerId, email, nickname, image },
+  });
 }
 
 export default {
@@ -54,4 +66,6 @@ export default {
   create,
   update,
   updateRefreshToken,
+  findBySocial,
+  createSocial,
 };

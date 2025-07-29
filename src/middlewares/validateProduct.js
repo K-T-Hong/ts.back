@@ -1,6 +1,5 @@
 export default function validateProduct(req, res, next) {
   const { name, description, price, tags } = req.body;
-  // 이미지는 multer가 처리
 
   if (
     !name ||
