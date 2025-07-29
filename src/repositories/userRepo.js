@@ -49,13 +49,15 @@ async function updateRefreshToken(id, refreshToken) {
 
 async function findBySocial(provider, providerId) {
   return prisma.user.findUnique({
-    where: { provider_providerId: { provider, providerId } },
+    where: {
+      provider_providerId: { provider, providerId: String(providerId) },
+    },
   });
 }
 
 async function createSocial({ provider, providerId, email, nickname, image }) {
   return prisma.user.create({
-    data: { provider, providerId, email, nickname, image },
+    data: { provider, providerId: String(providerId), email, nickname, image },
   });
 }
 

@@ -28,6 +28,7 @@ async function signup({ email, nickname, password }) {
   if (existing) {
     const err = new Error("이미 등록된 이메일입니다.");
     err.status = 409;
+    err.errorType = "email";
     throw err;
   }
   const hashed = await bcrypt.hash(password, SALT_ROUNDS);
@@ -39,14 +40,16 @@ async function signup({ email, nickname, password }) {
 async function signin({ email, password }) {
   const user = await userRepo.findByEmail(email);
   if (!user || !user.password) {
-    const err = new Error("이메일 또는 비밀번호 오류");
+    const err = new Error("존재하지 않는 이메일입니다.");
     err.status = 401;
+    err.errorType = "email";
     throw err;
   }
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
-    const err = new Error("이메일 또는 비밀번호 오류");
+    const err = new Error("잘못된 비밀번호 입니다.");
     err.status = 401;
+    err.errorType = "password";
     throw err;
   }
 

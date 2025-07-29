@@ -18,11 +18,12 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        const providerId = String(profile.id);
         let user = await userRepo.findBySocial("google", profile.id);
         if (!user) {
           user = await userRepo.createSocial({
             provider: "google",
-            providerId: profile.id,
+            providerId,
             email: profile.emails?.[0]?.value,
             nickname: profile.displayName,
             image: profile.photos?.[0]?.value,
@@ -45,11 +46,12 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+        const providerId = String(profile.id);
         let user = await userRepo.findBySocial("kakao", profile.id);
         if (!user) {
           user = await userRepo.createSocial({
             provider: "kakao",
-            providerId: profile.id,
+            providerId,
             email: profile._json.kakao_account?.email,
             nickname: profile.displayName,
             image: profile._json.properties?.profile_image,
