@@ -1,6 +1,9 @@
 import prisma from "../config/prisma.js";
 
-async function findByLike(userId, articleId) {
+export function findByLike(
+  userId: number | string,
+  articleId: number | string
+) {
   return prisma.like.findUnique({
     where: {
       userId_articleId: {
@@ -11,13 +14,19 @@ async function findByLike(userId, articleId) {
   });
 }
 
-async function create(userId, articleId) {
+export async function create(
+  userId: number | string,
+  articleId: number | string
+) {
   return prisma.like.create({
     data: { userId: Number(userId), articleId: Number(articleId) },
   });
 }
 
-async function remove(userId, articleId) {
+export async function remove(
+  userId: number | string,
+  articleId: number | string
+) {
   return prisma.like.delete({
     where: {
       userId_articleId: {
@@ -28,7 +37,7 @@ async function remove(userId, articleId) {
   });
 }
 
-async function countByArticle(articleId) {
+export async function countByArticle(articleId: number | string) {
   return prisma.like.count({ where: { articleId: Number(articleId) } });
 }
 

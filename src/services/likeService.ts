@@ -1,8 +1,8 @@
 import prisma from "../config/prisma.js";
-import likeRepo from "../repositories/likeRepo.js";
+import * as likeRepo from "../repositories/likeRepo.js";
 
-async function like(userId, articleId) {
-  return await prisma.$transaction(async tx => {
+export async function like(userId: number, articleId: number) {
+  return prisma.$transaction(async tx => {
     const existing = await tx.like.findUnique({
       where: {
         userId_articleId: {
@@ -30,7 +30,7 @@ async function like(userId, articleId) {
   });
 }
 
-async function count(articleId) {
+export async function count(articleId: number) {
   return likeRepo.countByArticle(articleId);
 }
 

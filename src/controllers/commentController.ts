@@ -1,6 +1,9 @@
 import express from "express";
-import commentService from "../services/commentService.js";
+import * as commentService from "../services/commentService.js";
 import auth from "../middlewares/auth.js";
+
+type CommentCreateBody = { content: string };
+const toInt = (v: string) => Number(v);
 
 const commentController = express.Router();
 
@@ -42,10 +45,11 @@ commentController.post(
   auth.verifyAuth,
   async (req, res, next) => {
     try {
+      const body = req.body as unknown as CommentCreateBody;
       const comment = await commentService.createForProduct({
-        userId: req.user.id,
-        productId: req.params.productId,
-        content: req.body.content,
+        userId: req.user!.id,
+        productId: toInt(req.params.productId),
+        content: body.content,
       });
       res.status(201).json(comment);
     } catch (error) {
@@ -59,10 +63,11 @@ commentController.post(
   auth.verifyAuth,
   async (req, res, next) => {
     try {
+      const body = req.body as unknown as CommentCreateBody;
       const comment = await commentService.createForArticle({
-        userId: req.user.id,
-        articleId: req.params.articleId,
-        content: req.body.content,
+        userId: req.user!.id,
+        articleId: toInt(req.params.articleId),
+        content: body.content,
       });
       res.status(201).json(comment);
     } catch (error) {
@@ -76,10 +81,11 @@ commentController.patch(
   auth.verifyAuth,
   async (req, res, next) => {
     try {
+      const body = req.body as unknown as CommentCreateBody;
       const comment = await commentService.update(
         req.params.id,
-        req.user.id,
-        req.body.content
+        req.user!.id,
+        body.content
       );
       res.json(comment);
     } catch (error) {
@@ -93,7 +99,7 @@ commentController.delete(
   auth.verifyAuth,
   async (req, res, next) => {
     try {
-      await commentService.remove(req.params.id, req.user.id);
+      await commentService.remove(req.params.id, req.user!.id);
       res.status(204).end();
     } catch (error) {
       next(error);

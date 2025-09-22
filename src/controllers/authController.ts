@@ -15,7 +15,7 @@ authController.get(
     session: false,
   }),
   (req, res) => {
-    const user = req.user;
+    const user = req.user!;
     const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "15m",
     });
@@ -44,7 +44,7 @@ authController.get(
   "/kakao/callback",
   passport.authenticate("kakao", { failureRedirect: "/login", session: false }),
   (req, res) => {
-    const user = req.user;
+    const user = req.user!;
     const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "15m",
     });

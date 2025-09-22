@@ -1,8 +1,8 @@
 import prisma from "../config/prisma.js";
-import favoriteRepo from "../repositories/favoriteRepo.js";
+import * as favoriteRepo from "../repositories/favoriteRepo.js";
 
-async function favorite(userId, productId) {
-  return await prisma.$transaction(async tx => {
+export async function favorite(userId: number, productId: number) {
+  return prisma.$transaction(async tx => {
     const existing = await tx.favorite.findUnique({
       where: {
         userId_productId: {
@@ -30,7 +30,7 @@ async function favorite(userId, productId) {
   });
 }
 
-async function count(productId) {
+export async function count(productId: number) {
   return favoriteRepo.countByProduct(productId);
 }
 

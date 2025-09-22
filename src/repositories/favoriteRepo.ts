@@ -1,6 +1,9 @@
 import prisma from "../config/prisma.js";
 
-async function findByFavorite(userId, productId) {
+export function findByFavorite(
+  userId: number | string,
+  productId: number | string
+) {
   return prisma.favorite.findUnique({
     where: {
       userId_productId: {
@@ -11,13 +14,19 @@ async function findByFavorite(userId, productId) {
   });
 }
 
-async function create(userId, productId) {
+export async function create(
+  userId: number | string,
+  productId: number | string
+) {
   return prisma.favorite.create({
     data: { userId: Number(userId), productId: Number(productId) },
   });
 }
 
-async function remove(userId, productId) {
+export async function remove(
+  userId: number | string,
+  productId: number | string
+) {
   return prisma.favorite.delete({
     where: {
       userId_productId: {
@@ -28,7 +37,7 @@ async function remove(userId, productId) {
   });
 }
 
-async function countByProduct(productId) {
+export async function countByProduct(productId: number | string) {
   return prisma.favorite.count({ where: { productId: Number(productId) } });
 }
 

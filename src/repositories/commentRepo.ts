@@ -1,36 +1,37 @@
 import prisma from "../config/prisma.js";
+import type { Prisma } from "@prisma/client";
 
-function findAll() {
+export function findAll() {
   return prisma.comment.findMany({ orderBy: { createdAt: "asc" } });
 }
 
-function findByProduct(productId) {
+export function findByProduct(productId: number | string) {
   return prisma.comment.findMany({
     where: { productId: Number(productId) },
     orderBy: { createdAt: "asc" },
   });
 }
 
-function findByArticle(articleId) {
+export function findByArticle(articleId: number | string) {
   return prisma.comment.findMany({
     where: { articleId: Number(articleId) },
     orderBy: { createdAt: "asc" },
   });
 }
 
-function findById(id) {
+export function findById(id: number | string) {
   return prisma.comment.findUnique({ where: { id: Number(id) } });
 }
 
-function create(data) {
+export function create(data: Prisma.CommentCreateInput) {
   return prisma.comment.create({ data });
 }
 
-function update(id, data) {
+export function update(id: number | string, data: Prisma.CommentUpdateInput) {
   return prisma.comment.update({ where: { id: Number(id) }, data });
 }
 
-function remove(id) {
+export function remove(id: number | string) {
   return prisma.comment.delete({ where: { id: Number(id) } });
 }
 
